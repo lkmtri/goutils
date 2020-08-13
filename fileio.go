@@ -1,32 +1,19 @@
 package goutils
 
 import (
-	"bufio"
-	"log"
-	"os"
+	"encoding/json"
+	"io/ioutil"
 )
 
-func ReadLinesFromFile(filePath string) ([]string, error) {
-	file, err := os.Open(filePath)
+type File struct {
+	Path string
+}
 
+func (f *File) ReadJson(out interface{}) error {
+	bytes, err := ioutil.ReadFile(f.Path)
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		return err
 	}
 
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	res := []string{}
-
-	for scanner.Scan() {
-		res = append(res, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-
-	return res, nil
+	return json.Unmarshal(bytes, out)
 }
